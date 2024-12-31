@@ -1,0 +1,9 @@
+rootProject.name = "Assurance"
+
+include("common")
+include("servicesclients")
+include("servicescontrats")
+include("servicesnotifications")
+include("eurekaserver")
+
+
