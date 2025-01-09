@@ -1,6 +1,11 @@
 package org.example.servicecontrats;
 
 import jakarta.persistence.*;
+
+import org.example.serviceclients.Client;
+
+
+
 import java.time.LocalDate;
 
 @Entity
@@ -10,7 +15,12 @@ public class Contrat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long clientId; // Référence au client
+    // Le client est obligatoire
+
+    @ManyToOne
+    @JoinColumn(name = "client_id", nullable = false)
+    private Client client; // Référence au client
+
     private LocalDate dateDebut;
     private LocalDate dateFin;
     private double montantAssure;
@@ -21,7 +31,6 @@ public class Contrat {
     }
 
     // Getters et setters
-
     public Long getId() {
         return id;
     }
@@ -30,13 +39,13 @@ public class Contrat {
         this.id = id;
     }
 
-    public Long getClientId() {
-        return clientId;
+    public Client getClient() {
+        return client;
     }
 
-    public void setClientId(Long clientId) {
-        this.clientId = clientId;
-    }
+    //public void setClient(ClientDTO clientDTO) {
+    //    this.client = client;
+    //}
 
     public LocalDate getDateDebut() {
         return dateDebut;
@@ -76,5 +85,14 @@ public class Contrat {
 
     public void setDureeEnAnnees(int dureeEnAnnees) {
         this.dureeEnAnnees = dureeEnAnnees;
+    }
+
+
+    public Long getClientId() {
+        return client != null ? client.getId() : null; // Evite le NullPointerException
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
     }
 }

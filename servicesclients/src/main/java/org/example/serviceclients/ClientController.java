@@ -1,12 +1,15 @@
 package org.example.serviceclients;
 
+import org.example.common.models.ClientDTO;
+import org.example.serviceclients.ClientService;
+import org.example.serviceclients.mapper.ClientMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/clients")
@@ -15,44 +18,52 @@ public class ClientController {
     @Autowired
     private ClientService clientService;
 
-    /**
-     * API pour créer un nouveau client.
-     */
+    @Autowired
+    private ClientMapper clientMapper;
+
     @PostMapping
-    public ResponseEntity<Client> creerClient(@RequestBody Client client) {
-        if (!clientService.estEmailValide(client.getEmail())) {
+    public ResponseEntity<ClientDTO> creerClient(@RequestBody ClientDTO clientDTO) {
+        if (!clientService.estEmailValide(clientDTO.getEmail())) {
             return ResponseEntity.badRequest().body(null);
         }
-        Client nouveauClient = clientService.creerClient(client);
+        ClientDTO nouveauClient = clientService.creerClient(clientDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(nouveauClient);
     }
 
-    /**
-     * API pour obtenir tous les clients.
-     */
+    @GetMapping("/{id}")
+    public ResponseEntity<ClientDTO> obtenirClientParId(@PathVariable Long id) {
+        ClientDTO client = clientService.obtenirClientParId(id);
+        return ResponseEntity.ok(client);
+    }
+
     @GetMapping
-    public ResponseEntity<List<Client>> obtenirTousLesClients() {
-        List<Client> clients = clientService.clientRepository.findAll();
+    public ResponseEntity<List<ClientDTO>> obtenirClients() {
+        List<ClientDTO> clients = clientService.clientRepository.findAll().stream().map(clientMapper::toClientDTO).collect(Collectors.toList());
         return ResponseEntity.ok(clients);
     }
 
-    /**
-     * API pour obtenir un client par son ID.
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<Client> obtenirClientParId(@PathVariable Long id) {
-        Optional<Client> client = clientService.obtenirClientParId(id);
-        return client.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    /**
-     * API pour supprimer un client par son ID.
-     */
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> supprimerClient(@PathVariable Long id) {
+    public ResponseEntity<String> removerClientParId(@PathVariable Long id) {
         clientService.supprimerClient(id);
         return ResponseEntity.ok("Client supprimé avec succès !");
     }
-}
 
+    @PutMapping("/{id}")
+    public ResponseEntity<String> modifierClientParId(@PathVariable Long id, @RequestBody ClientDTO clientDTO) {
+        try {
+            clientService.mettreAJourClient(id, clientDTO);
+            return ResponseEntity.ok("Le client a été modifié avec succès !");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur est survenue.");
+        }
+    }
+
+
+
+
+
+
+
+}

@@ -1,69 +1,86 @@
 package org.example.servicecontrats;
 
-
-
-import org.example.servicecontrats.feignclients.ClientServiceClient;
-import org.example.common.models.ClientDTO;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.example.serviceclients.mapper.ClientMapper;
+import org.example.common.models.ClientDTO;
+import org.example.common.models.ContratDTO;
+import org.example.servicecontrats.feignclients.ClientServiceClient;
+import org.example.servicecontrats.mappers.ContratMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+
 
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ContratService {
 
-    @Autowired
-    private ContratRepository contratRepository;
 
-    @Autowired
-    private ClientServiceClient clientServiceClient;
+    private  final ContratRepository contratRepository;
 
-    /**
-     * Créer un contrat avec validation des règles métier.
-     */
-    public Contrat creerContrat(Contrat contrat) {
-        // Vérifier si le client existe dans le Service des Clients
-        ClientDTO client = clientServiceClient.getClientById(contrat.getClientId())
+    private final ClientServiceClient clientServiceClient;
+
+    private final ContratMapper contratMapper;
+
+    private final ClientMapper clientMapper;
+
+
+
+    public ContratDTO creerContrat(ContratDTO contratDTO) {
+        // Vérifier si le client existe
+        ClientDTO clientDTO = clientServiceClient.getClientById(contratDTO.getClientId())
                 .orElseThrow(() -> new IllegalArgumentException("Le client n'existe pas."));
 
-        // Vérifier les règles métier
-        if (client.getAge() < 18) {
+        // Vérifications métier
+        if (clientDTO.getAge() < 18) {
             throw new IllegalArgumentException("Le client doit avoir au moins 18 ans.");
         }
-        if (contrat.getDureeEnAnnees() < 1) {
+        if (contratDTO.getDureeEnAnnees() < 1) {
             throw new IllegalArgumentException("La durée du contrat doit être supérieure à 1 an.");
         }
-        if (contrat.getMontantAssure() <= 10000) {
+        if (contratDTO.getMontantAssure() <= 10000) {
             throw new IllegalArgumentException("Le montant assuré doit être supérieur à 10 000 euros.");
         }
 
-        // Sauvegarder le contrat
-        return contratRepository.save(contrat);
+        // Convertir DTO en entité
+        Contrat contrat = contratMapper.toContrat(contratDTO);
+        contrat.setClient(clientMapper.toClient(clientDTO)); // Résolution explicite du client
+
+        // Sauvegarder dans la base
+        Contrat contratSauvegarde = contratRepository.save(contrat);
+
+        // Retourner en DTO
+        return contratMapper.toContratDTO(contratSauvegarde);
     }
 
-    /**
-     * Obtenir un contrat par ID.
-     */
-    public Optional<Contrat> obtenirContratParId(Long id) {
-        return contratRepository.findById(id);
+    public Optional<ContratDTO> obtenirContratParId(Long id) {
+        return contratRepository.findById(id)
+                .map(contratMapper::toContratDTO);
     }
 
-    /**
-     * Mettre à jour un contrat existant.
-     */
-    public Contrat mettreAJourContrat(Long id, Contrat updatedContrat) {
+    public ContratDTO mettreAJourContrat(Long id, ContratDTO updatedContratDTO) {
         Contrat contrat = contratRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Contrat introuvable."));
 
-        contrat.setDureeEnAnnees(updatedContrat.getDureeEnAnnees());
-        contrat.setMontantAssure(updatedContrat.getMontantAssure());
-        return contratRepository.save(contrat);
+        // Mise à jour des champs
+        contrat.setDateDebut(updatedContratDTO.getDateDebut());
+        contrat.setDateFin(updatedContratDTO.getDateFin());
+        contrat.setMontantAssure(updatedContratDTO.getMontantAssure());
+        contrat.setDureeEnAnnees(updatedContratDTO.getDureeEnAnnees());
+        contrat.setEstValide(updatedContratDTO.isEstValide());
+
+        // Sauvegarder
+        Contrat contratMisAJour = contratRepository.save(contrat);
+
+        // Retourner en DTO
+        return contratMapper.toContratDTO(contratMisAJour);
     }
 
-    /**
-     * Supprimer un contrat.
-     */
     public void supprimerContrat(Long id) {
+        if (!contratRepository.existsById(id)) {
+            throw new IllegalArgumentException("Contrat introuvable.");
+        }
         contratRepository.deleteById(id);
     }
 }

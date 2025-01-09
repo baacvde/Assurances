@@ -62,6 +62,6 @@ public class ClientDTO {
     }
 
     public int getAge() {
-        return dateDeNaissance.getYear() - LocalDate.now().getYear();
+        return  LocalDate.now().getYear() - dateDeNaissance.getYear();
     }
 }

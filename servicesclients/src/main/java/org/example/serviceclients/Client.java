@@ -68,4 +68,6 @@ public class Client {
     public void setAdresse(String adresse) {
         this.adresse = adresse;
     }
+
+
 }
