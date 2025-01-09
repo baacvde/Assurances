@@ -1,13 +1,9 @@
 package org.example.serviceclients;
 
-
-
+import org.example.common.models.ClientDTO;
+import org.example.serviceclients.mapper.ClientMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.time.Period;
-import java.util.Optional;
 
 @Service
 public class ClientService {
@@ -15,32 +11,49 @@ public class ClientService {
     @Autowired
     ClientRepository clientRepository;
 
+    @Autowired
+    private ClientMapper clientMapper;
+
     /**
-     * Créer un nouveau client.
+     * Crée un nouveau client.
+     *
+     * @param clientDTO DTO du client à créer.
+     * @return Le DTO du client sauvegardé.
      */
-    public Client creerClient(Client client) {
+    public ClientDTO creerClient(ClientDTO clientDTO) {
+        // Convertir le DTO en entité
+        Client client = clientMapper.toClient(clientDTO);
+
+        // Vérifier l'unicité de l'email
         if (clientRepository.existsByEmail(client.getEmail())) {
             throw new IllegalArgumentException("Un client avec cet email existe déjà.");
         }
-        return clientRepository.save(client);
+
+        // Sauvegarder l'entité
+        Client savedClient = clientRepository.save(client);
+
+        // Convertir l'entité sauvegardée en DTO
+        return clientMapper.toClientDTO(savedClient);
     }
 
     /**
-     * Obtenir un client par son ID.
+     * Obtenir un client par ID.
+     *
+     * @param id ID du client.
+     * @return Le DTO du client correspondant.
      */
-    public Optional<Client> obtenirClientParId(Long id) {
-        return clientRepository.findById(id);
+    public ClientDTO obtenirClientParId(Long id) {
+        Client client = clientRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Client introuvable."));
+
+        return clientMapper.toClientDTO(client);
     }
 
     /**
-     * Calculer l'âge d'un client à partir de sa date de naissance.
-     */
-    public int calculerAge(LocalDate dateDeNaissance) {
-        return Period.between(dateDeNaissance, LocalDate.now()).getYears();
-    }
-
-    /**
-     * Valider qu'un client a une adresse e-mail valide.
+     * Vérifie si un email est valide.
+     *
+     * @param email Email à valider.
+     * @return true si l'email est valide, sinon false.
      */
     public boolean estEmailValide(String email) {
         String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
@@ -48,10 +61,34 @@ public class ClientService {
     }
 
     /**
-     * Supprimer un client par ID.
+     * Supprime un client par ID.
+     *
+     * @param id ID du client à supprimer.
      */
     public void supprimerClient(Long id) {
+        if (!clientRepository.existsById(id)) {
+            throw new IllegalArgumentException("Client introuvable avec l'ID : " + id);
+        }
         clientRepository.deleteById(id);
     }
-}
 
+    /**
+     * Met à jour un client existant.
+     *
+     * @param id        ID du client à mettre à jour.
+     * @param clientDTO DTO contenant les nouvelles informations du client.
+     * @return Le client mis à jour.
+     */
+    public ClientDTO mettreAJourClient(Long id, ClientDTO clientDTO) {
+        Client clientExistant = clientRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Client introuvable avec l'ID : " + id));
+
+        // Mapper les champs mis à jour
+        clientMapper.updateClientFromDTO(clientDTO, clientExistant);
+
+        // Sauvegarder les modifications
+        Client clientMisAJour = clientRepository.save(clientExistant);
+
+        return clientMapper.toClientDTO(clientMisAJour);
+    }
+}

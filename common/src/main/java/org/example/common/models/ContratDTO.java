@@ -3,9 +3,7 @@ package org.example.common.models;
 import java.time.LocalDate;
 
 public class ContratDTO {
-
-    private Long id;
-    private Long clientId; // Référence au client
+    private Long clientId;
     private LocalDate dateDebut;
     private LocalDate dateFin;
     private double montantAssure;
@@ -13,15 +11,6 @@ public class ContratDTO {
     private int dureeEnAnnees;
 
     // Getters et setters
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public Long getClientId() {
         return clientId;
     }
