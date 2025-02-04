@@ -11,6 +11,10 @@ public class ClientDTO {
     private LocalDate dateDeNaissance;
     private String adresse;
 
+    public ClientDTO(long id, String nom, String prenom, String email, LocalDate dateDeNaissance, String adresse) {
+    }
+
+    public ClientDTO() {}
     // Getters et setters
 
     public Long getId() {

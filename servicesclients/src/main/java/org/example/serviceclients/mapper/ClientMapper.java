@@ -1,7 +1,7 @@
 package org.example.serviceclients.mapper;
 
 import org.example.common.models.ClientDTO;
-import org.example.serviceclients.Client;
+import org.example.serviceclients.entity.Client;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 

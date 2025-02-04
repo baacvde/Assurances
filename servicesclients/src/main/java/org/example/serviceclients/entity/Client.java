@@ -1,8 +1,11 @@
-package org.example.serviceclients;
+package org.example.serviceclients.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
+
 import java.time.LocalDate;
 
+@Builder
 @Entity
 public class Client {
 
@@ -17,6 +20,10 @@ public class Client {
     private String adresse;
 
     public Client() {
+    }
+
+    public Client(Long id,String nom, String prenom, String email, LocalDate dateDeNaissance, String adresse) {
+
     }
 
     // Getters et setters

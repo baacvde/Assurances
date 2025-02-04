@@ -13,7 +13,6 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
         "org.example.servicecontrats",
         "org.example.serviceclients.mapper"
 })
-
 public class ServiceContratApplication {
 
     public static void main(String[] args) {

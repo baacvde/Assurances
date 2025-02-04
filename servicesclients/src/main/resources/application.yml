@@ -1,4 +1,9 @@
 spring:
+  kafka:
+  producer:
+  bootstrap-servers: localhost:9092
+  key-serializer: org.apache.kafka.common.serialization.StringSerializer
+  value-serializer: org.apache.kafka.common.serialization.StringSerializer
   application:
     name: servicesclients
   datasource:
@@ -31,3 +36,7 @@ logging:
     com.netflix.discovery: DEBUG
     com.netflix.eureka: DEBUG
     feign: DEBUG
+
+mail:
+  host: localhost  # Mail server host
+  port: 9025  # Mail server port
