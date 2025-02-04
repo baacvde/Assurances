@@ -1,8 +1,8 @@
-package org.example.servicecontrats;
+package org.example.servicecontrats.entity;
 
 import jakarta.persistence.*;
 
-import org.example.serviceclients.Client;
+import org.example.serviceclients.entity.Client;
 
 
 
@@ -94,5 +94,9 @@ public class Contrat {
 
     public void setClient(Client client) {
         this.client = client;
+    }
+
+    public boolean isNew() {
+        return true;
     }
 }

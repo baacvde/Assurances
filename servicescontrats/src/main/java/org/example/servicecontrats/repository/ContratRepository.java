@@ -1,5 +1,6 @@
-package org.example.servicecontrats;
+package org.example.servicecontrats.repository;
 
+import org.example.servicecontrats.entity.Contrat;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

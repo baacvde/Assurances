@@ -3,7 +3,7 @@
 package org.example.servicecontrats.mappers;
 
 import org.example.common.models.ContratDTO;
-import org.example.servicecontrats.Contrat;
+import org.example.servicecontrats.entity.Contrat;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

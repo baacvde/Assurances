@@ -1,18 +1,26 @@
-package org.example.serviceclients;
+package org.example.serviceclients.service;
 
 import org.example.common.models.ClientDTO;
+import org.example.serviceclients.repository.ClientRepository;
+import org.example.serviceclients.entity.Client;
 import org.example.serviceclients.mapper.ClientMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ClientService {
+    public final ClientRepository clientRepository;
+    private final ClientMapper clientMapper;
 
-    @Autowired
-    ClientRepository clientRepository;
+    public ClientService(ClientRepository clientRepository, ClientMapper clientMapper) {
+        this.clientRepository = clientRepository;
+        this.clientMapper = clientMapper;
+    }
 
-    @Autowired
-    private ClientMapper clientMapper;
+
+
 
     /**
      * Crée un nouveau client.
@@ -90,5 +98,10 @@ public class ClientService {
         Client clientMisAJour = clientRepository.save(clientExistant);
 
         return clientMapper.toClientDTO(clientMisAJour);
+    }
+    public List<ClientDTO> obtenirClients() {
+        return clientRepository.findAll().stream()
+                .map(clientMapper::toClientDTO)
+                .collect(Collectors.toList());
     }
 }

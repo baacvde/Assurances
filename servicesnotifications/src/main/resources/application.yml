@@ -1,9 +1,40 @@
 spring:
   application:
     name: servicesnotifications
+  datasource:
+    url: jdbc:postgresql://localhost:5432/assurance_db
+    username: postgres
+    password: baac
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate.format_sql: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: sambaissa.diop92@gmail.com
+    password: 
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 server:
   port: 8083
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
+kafka:
+  consumer:
+    bootstrap-servers: localhost:9092
+    group-id: notification-group
+    topic: notifications
+    key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    auto-offset-reset: earliest
+

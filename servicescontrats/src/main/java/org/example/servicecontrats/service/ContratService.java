@@ -1,23 +1,26 @@
-package org.example.servicecontrats;
+package org.example.servicecontrats.service;
 
-import lombok.RequiredArgsConstructor;
+import org.example.servicecontrats.KafkaNotificationProducer;
+import org.example.servicecontrats.entity.Contrat;
+import org.example.servicecontrats.repository.ContratRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.example.serviceclients.mapper.ClientMapper;
 import org.example.common.models.ClientDTO;
 import org.example.common.models.ContratDTO;
 import org.example.servicecontrats.feignclients.ClientServiceClient;
 import org.example.servicecontrats.mappers.ContratMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 
 
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ContratService {
 
+    private final KafkaNotificationProducer kafkaProducer;
 
-    private  final ContratRepository contratRepository;
+
+    public final ContratRepository contratRepository;
 
     private final ClientServiceClient clientServiceClient;
 
@@ -25,6 +28,13 @@ public class ContratService {
 
     private final ClientMapper clientMapper;
 
+    public ContratService(KafkaNotificationProducer kafkaProducer, ContratRepository contratRepository, ClientServiceClient clientServiceClient, ContratMapper contratMapper, ClientMapper clientMapper) {
+        this.kafkaProducer = kafkaProducer;
+        this.contratRepository = contratRepository;
+        this.clientServiceClient = clientServiceClient;
+        this.contratMapper = contratMapper;
+        this.clientMapper = clientMapper;
+    }
 
 
     public ContratDTO creerContrat(ContratDTO contratDTO) {
@@ -49,6 +59,17 @@ public class ContratService {
 
         // Sauvegarder dans la base
         Contrat contratSauvegarde = contratRepository.save(contrat);
+
+
+        // Envoyer une notification Kafka
+        String notificationMessage = String.format(
+                "Client ID: %s, Contract ID: %s, Operation: %s",
+                contrat.getClientId(),
+                contrat.getId(),
+                contrat.isNew() ? "CREATION" : "UPDATE"
+        );
+        kafkaProducer.sendNotification("notifications", notificationMessage);
+        System.out.println(notificationMessage);
 
         // Retourner en DTO
         return contratMapper.toContratDTO(contratSauvegarde);
