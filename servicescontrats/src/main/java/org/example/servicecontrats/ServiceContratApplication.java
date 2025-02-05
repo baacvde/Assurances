@@ -11,7 +11,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EntityScan(basePackages = {
         "org.example.serviceclients",
         "org.example.servicecontrats",
-        "org.example.serviceclients.mapper"
+        "org.example.serviceclients.mapper",
+        "org.example.common.entity"
 })
 public class ServiceContratApplication {
 

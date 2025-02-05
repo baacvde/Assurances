@@ -6,6 +6,7 @@ import org.example.servicecontrats.mappers.ContratMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/contrats")
+@RequestMapping("/api/contrats")
 public class ContratController {
 
 
@@ -32,14 +33,14 @@ public class ContratController {
             return ResponseEntity.badRequest().body(null);
         }
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<ContratDTO> obtenirContratParId(@PathVariable Long id) {
         Optional<ContratDTO> contratDTO = contratService.obtenirContratParId(id);
         return contratDTO.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<ContratDTO> mettreAJourContrat(@PathVariable Long id, @RequestBody ContratDTO updatedContrat) {
         try {
@@ -49,7 +50,7 @@ public class ContratController {
             return ResponseEntity.badRequest().body(null);
         }
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> supprimerContrat(@PathVariable Long id) {
         try {
@@ -60,6 +61,7 @@ public class ContratController {
         }
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<ContratDTO>> listerContrats() {
         List<ContratDTO> contrats = contratService.contratRepository.findAll().stream().

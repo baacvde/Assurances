@@ -1,8 +1,8 @@
 package org.example.servicecontrats.controller;
 
 import lombok.AllArgsConstructor;
-import org.example.servicecontrats.Dto.AuthResponseDto;
-import org.example.servicecontrats.Dto.LoginDto;
+import org.example.common.models.AuthResponseDto;
+import org.example.common.models.LoginDto;
 import org.example.servicecontrats.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
