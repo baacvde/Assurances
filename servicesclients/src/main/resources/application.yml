@@ -36,7 +36,10 @@ logging:
     com.netflix.discovery: DEBUG
     com.netflix.eureka: DEBUG
     feign: DEBUG
+    org.example.servicecontrats.feignclients: DEBUG
 
 mail:
   host: localhost  # Mail server host
   port: 9025  # Mail server port
+
+

@@ -63,14 +63,14 @@ public class ContratService {
 
 
         // Envoyer une notification Kafka
-        String notificationMessage = String.format(
-                "Client ID: %s, Contract ID: %s, Operation: %s",
-                contrat.getClientId(),
-                contrat.getId(),
-                contrat.isNew() ? "CREATION" : "UPDATE"
-        );
-        kafkaProducer.sendNotification("notifications", notificationMessage);
-        System.out.println(notificationMessage);
+        //String notificationMessage = String.format(
+        //        "Client ID: %s, Contract ID: %s, Operation: %s",
+        //        contrat.getClientId(),
+        //        contrat.getId(),
+        //        contrat.isNew() ? "CREATION" : "UPDATE"
+        //);
+        //kafkaProducer.sendNotification("notifications", notificationMessage);
+        //System.out.println(notificationMessage);
 
         // Retourner en DTO
         return contratMapper.toContratDTO(contratSauvegarde);
