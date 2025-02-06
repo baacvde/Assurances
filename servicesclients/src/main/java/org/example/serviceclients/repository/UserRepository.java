@@ -1,7 +1,7 @@
 package org.example.serviceclients.repository;
 
 
-import org.example.serviceclients.entity.User;
+import org.example.common.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

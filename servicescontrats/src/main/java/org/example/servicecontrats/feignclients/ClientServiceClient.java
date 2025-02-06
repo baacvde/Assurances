@@ -8,10 +8,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.Optional;
 
-@FeignClient(name = "servicesclients")
+@FeignClient(name = "ClientServiceClient", url = "http://localhost:8081/")
 public interface ClientServiceClient {
 
     @GetMapping("/clients/{id}")
     Optional<ClientDTO> getClientById(@PathVariable("id") Long id);
+
+
 }
 

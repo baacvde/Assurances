@@ -1,7 +1,7 @@
 package org.example.servicecontrats.service.Impl;
 
 
-import org.example.servicecontrats.Dto.LoginDto;
+import org.example.common.models.LoginDto;
 import org.example.servicecontrats.config.JwtTokenProvider;
 import org.example.servicecontrats.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;

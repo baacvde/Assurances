@@ -1,7 +1,7 @@
 package org.example.servicecontrats.config;
 
 
-import org.example.servicecontrats.entity.UserContrat;
+import org.example.common.entity.User;
 import org.example.servicecontrats.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,17 +23,17 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        UserContrat userContrat = userRepository.findByUsername(username) .orElseThrow(() ->
+        User user = userRepository.findByUsername(username) .orElseThrow(() ->
                 new UsernameNotFoundException("User not exists by Username or Email"));
 
 
-        Set<GrantedAuthority> authorities = userContrat.getRoles().stream()
+        Set<GrantedAuthority> authorities = user.getRoles().stream()
                 .map((role) -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toSet());
 
         return new org.springframework.security.core.userdetails.User(
                 username,
-                userContrat.getPassword(),
+                user.getPassword(),
                 authorities
         );
     }

@@ -1,4 +1,4 @@
-package org.example.servicecontrats.Dto;
+package org.example.common.models;
 
 import lombok.Data;
 
