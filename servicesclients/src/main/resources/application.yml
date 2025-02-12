@@ -40,6 +40,6 @@ logging:
 
 mail:
   host: localhost  # Mail server host
-  port: 9025  # Mail server port
+  port: 9025 # Mail server port
 
 

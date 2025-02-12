@@ -1,9 +1,10 @@
 package org.example.servicecontrats.service;
 
+import org.example.serviceclients.service.NotificationService;
 import org.example.servicecontrats.KafkaNotificationProducer;
 import org.example.servicecontrats.entity.Contrat;
 import org.example.servicecontrats.repository.ContratRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.example.servicenotifications.NotificationMessage;
 import org.springframework.stereotype.Service;
 import org.example.serviceclients.mapper.ClientMapper;
 import org.example.common.models.ClientDTO;
@@ -29,12 +30,15 @@ public class ContratService {
 
     private final ClientMapper clientMapper;
 
+
+
     public ContratService(KafkaNotificationProducer kafkaProducer, ContratRepository contratRepository, ClientServiceClient clientServiceClient, ContratMapper contratMapper, ClientMapper clientMapper) {
         this.kafkaProducer = kafkaProducer;
         this.contratRepository = contratRepository;
         this.clientServiceClient = clientServiceClient;
         this.contratMapper = contratMapper;
         this.clientMapper = clientMapper;
+
     }
 
 
@@ -62,15 +66,17 @@ public class ContratService {
         Contrat contratSauvegarde = contratRepository.save(contrat);
 
 
-        // Envoyer une notification Kafka
-        //String notificationMessage = String.format(
-        //        "Client ID: %s, Contract ID: %s, Operation: %s",
-        //        contrat.getClientId(),
-        //        contrat.getId(),
-        //        contrat.isNew() ? "CREATION" : "UPDATE"
-        //);
-        //kafkaProducer.sendNotification("notifications", notificationMessage);
-        //System.out.println(notificationMessage);
+        //Envoi de Kafka notification
+        NotificationMessage notificationMessage = new NotificationMessage();
+        notificationMessage.setClientId(contrat.getClientId().toString());
+        notificationMessage.setContractId(contrat.getId().toString());
+        notificationMessage.setOperation("CREATION");
+        notificationMessage.setMessage("Creation de pour le client " + clientDTO.getNom());
+
+        kafkaProducer.sendNotification(notificationMessage);
+
+
+
 
         // Retourner en DTO
         return contratMapper.toContratDTO(contratSauvegarde);
@@ -82,6 +88,9 @@ public class ContratService {
     }
 
     public ContratDTO mettreAJourContrat(Long id, ContratDTO updatedContratDTO) {
+        // Vérifier si le client existe
+        ClientDTO clientDTO = clientServiceClient.getClientById(updatedContratDTO.getClientId())
+                .orElseThrow(() -> new IllegalArgumentException("Le client n'existe pas."));
         Contrat contrat = contratRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Contrat introuvable."));
 
@@ -92,8 +101,19 @@ public class ContratService {
         contrat.setDureeEnAnnees(updatedContratDTO.getDureeEnAnnees());
         contrat.setEstValide(updatedContratDTO.isEstValide());
 
+
+
         // Sauvegarder
         Contrat contratMisAJour = contratRepository.save(contrat);
+
+        //Envoi de Kafka notification
+        NotificationMessage notificationMessage = new NotificationMessage();
+        notificationMessage.setClientId(contrat.getClientId().toString());
+        notificationMessage.setContractId(contrat.getId().toString());
+        notificationMessage.setOperation("MISE A JOUR");
+        notificationMessage.setMessage("Contrat de " + clientDTO.getNom() + " mise à jour " );
+
+        kafkaProducer.sendNotification(notificationMessage);
 
         // Retourner en DTO
         return contratMapper.toContratDTO(contratMisAJour);

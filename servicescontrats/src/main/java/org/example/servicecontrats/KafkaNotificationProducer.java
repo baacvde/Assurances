@@ -1,15 +1,23 @@
 package org.example.servicecontrats;
 
+import org.example.servicenotifications.NotificationMessage;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+
 @Service
 public class KafkaNotificationProducer {
-    private final KafkaTemplate<String, String> kafkaTemplate;
-    public KafkaNotificationProducer(KafkaTemplate<String, String>
-                                             kafkaTemplate) {
-        this.kafkaTemplate = kafkaTemplate;
+
+    private static final String TOPIC = "notifications";
+
+    private  KafkaTemplate<String, NotificationMessage> notificationMessageKafkaTemplatekafkaTemplate;
+
+    public KafkaNotificationProducer(KafkaTemplate<String, NotificationMessage> kafkaTemplate) {
+        this.notificationMessageKafkaTemplatekafkaTemplate = kafkaTemplate;
     }
-    public void sendNotification(String topic, String message) {
-        kafkaTemplate.send(topic, message);
+
+    public void sendNotification(NotificationMessage message) {
+        notificationMessageKafkaTemplatekafkaTemplate.send(TOPIC, message);
+        System.out.println("Message envoyé : " + message);
     }
+
 }

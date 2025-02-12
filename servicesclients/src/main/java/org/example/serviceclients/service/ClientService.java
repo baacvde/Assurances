@@ -4,6 +4,7 @@ import org.example.common.models.ClientDTO;
 import org.example.serviceclients.repository.ClientRepository;
 import org.example.serviceclients.entity.Client;
 import org.example.serviceclients.mapper.ClientMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +14,8 @@ import java.util.stream.Collectors;
 public class ClientService {
     public final ClientRepository clientRepository;
     private final ClientMapper clientMapper;
+    @Autowired
+    private  NotificationService notificationService;
 
     public ClientService(ClientRepository clientRepository, ClientMapper clientMapper) {
         this.clientRepository = clientRepository;
@@ -39,6 +42,9 @@ public class ClientService {
 
         // Sauvegarder l'entité
         Client savedClient = clientRepository.save(client);
+
+        // Notification après insertion réussie
+        this.notificationService.sendNotification(clientDTO,client);
 
         // Convertir l'entité sauvegardée en DTO
         return clientMapper.toClientDTO(savedClient);

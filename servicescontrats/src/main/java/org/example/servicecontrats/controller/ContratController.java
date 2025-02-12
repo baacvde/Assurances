@@ -24,6 +24,7 @@ public class ContratController {
     @Autowired
     private ContratMapper contratMapper;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ContratDTO> creerContrat(@RequestBody ContratDTO contratDTO) {
         try {
