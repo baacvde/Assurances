@@ -21,14 +21,15 @@ public class NotificationService {
     public void sendNotification(ClientDTO clientDTO,Client client) {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8"); // Définir l'encodage UTF-8
+
 
             helper.setFrom("no-reply@gmail.com");
             helper.setTo(clientDTO.getEmail());
             helper.setSubject("Information Client");
 
             String text = String.format(
-                    "Bonjour %s, <br /> Votre identifiant client est %s. <br /> A bientot!",
+                    "Bonjour %s, <br /> Votre identifiant client est %s. <br /> A bientôt!",
                     clientDTO.getNom(),
                     client.getId()
             );
