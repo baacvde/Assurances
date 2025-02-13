@@ -20,7 +20,7 @@ public class ContratController {
 
 
     @Autowired
-    private ContratService contratService;
+    ContratService contratService;
     @Autowired
     private ContratMapper contratMapper;
 

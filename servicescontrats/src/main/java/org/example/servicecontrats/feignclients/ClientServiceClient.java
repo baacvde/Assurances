@@ -1,7 +1,9 @@
 package org.example.servicecontrats.feignclients;
 
 
+import feign.Param;
 import org.example.common.models.ClientDTO;
+import org.example.common.models.ContratDTO;
 import org.example.servicecontrats.config.FeignClientConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +16,7 @@ public interface ClientServiceClient {
 
     @GetMapping("/api/clients/{id}")
     Optional<ClientDTO> getClientById(@PathVariable("id") Long id);
+
 
 
 }
