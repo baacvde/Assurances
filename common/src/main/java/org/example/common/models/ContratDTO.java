@@ -58,4 +58,6 @@ public class ContratDTO {
     public void setDureeEnAnnees(int dureeEnAnnees) {
         this.dureeEnAnnees = dureeEnAnnees;
     }
+
+
 }
